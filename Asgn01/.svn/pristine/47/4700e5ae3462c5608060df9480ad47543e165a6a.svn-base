@@ -11,13 +11,6 @@ class OrderProcessor {
     private final OrderViewer orderViewer;
     private final DatabaseService databaseService;
 
-    
-    /**
-     * Initializes the OrderProcessor object
-     *
-     * @param databaseTarget the url of the database that we will connect to
-     */
-
     public OrderProcessor(String databaseTarget){
         orderRepository = new OrderRepository();
         orderViewer = new OrderViewer();
