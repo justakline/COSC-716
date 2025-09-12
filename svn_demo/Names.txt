@@ -1,0 +1,58 @@
+# This is a starter file for testing SVN.
+#
+# Add your real name after your username (on the same line), then save and commit.
+#
+# IMPORTANT: If you see an "error message," it's not necessarily an "issue." We'll talk about
+#            the meaning of various messages in class.
+##############################################################################################
+
+aconover: Hello :)
+
+aali20:
+
+ajames44:
+
+akondra1: Andrei V Kondrashov
+
+aradid2: Abdullah Radid
+
+bsexton1: Brooke Sexton
+
+bsparks1: Benjamin Sparks 
+
+bwolde1:
+
+dtownse1:
+
+epattm1:
+
+evorono1: Erik Voronov
+
+hamisu1: Haleemah Amisu
+
+isarpo1:
+
+ismith14: Ian Smith
+
+jdeeb1: Justin Deeb
+
+jheidri1:
+
+jkline11: Justin Kline
+
+jvossle1: Joshua Vossler
+
+jwashb2: Jesse Washburn
+
+lculli1:
+
+lnelson2: Luke
+
+mraitan1: Michael Raitano
+
+ozalzma1:
+
+vbangal1: Vachana Bangalore Krupashankar
+
+ztabass2: Zaynab Tabassi
+
