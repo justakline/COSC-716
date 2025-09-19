@@ -1,0 +1,40 @@
+import java.util.*;
+public class OrderRepository{
+    // Holds the current list of Product orders in memory.
+    private final List<Product> orders = new ArrayList<>();
+
+
+     /*
+     * Initializes the OrderRepository object
+     */
+    public OrderRepository(){
+
+    }
+
+    // returns the orders 
+    public List getOrders(){
+        return orders;
+    }
+
+    /**
+     * Adds a product to the current collection of orders.
+     *
+     * @param product the Product to insert into the orders list
+     */
+    public void addOrder(Product product) {
+        // Append the given Product to the end of the orders list.
+        orders.add(product);
+    }
+
+    /**
+     * Removes a product from the current collection of orders.
+     * If the product is not found, no change occurs.
+     *
+     * @param product the Product to remove from the orders list
+     */
+    public void removeOrder(Product product) {
+        // Remove the first occurrence of the given Product from the orders list.
+        orders.remove(product);
+    }
+
+}
