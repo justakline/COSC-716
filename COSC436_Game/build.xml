@@ -1,0 +1,211 @@
+<!-- ************************************************************************************************
+
+This file is actually optional, as you can build the project easily from within your IDE. However,
+if you want to build from the command line, and/or you want to build a "stand-alone" executable jar,
+then this file is helpful.
+
+This is a super simple ANT build file; its primary intent is to build the project to make sure
+that all the source files compile correctly. Though it can also be used for building a simple
+"Executable Jar" files if desired.
+
+Note that ANT is a relatively "simple" build tool (compared to Maven or Gradle) that handles the most
+common build tasks. Much like SVN vs. GIT, other tools *may* be more "powerful", but often, the added
+"power" doesn't justify the added complexity, especially if you don't *need those extra features.
+Plus, Apache's Ivy (https://ant.apache.org/ivy/) is an Ant dependency management extension with
+Maven repository compatibility.
+
+    ANT can be downloaded from: https://ant.apache.org/ Documentation:
+    https://ant.apache.org/manual/using.html Nice ANT Tutorial:
+    https://www.vogella.com/tutorials/ApacheAnt/article.html
+
+    (Building full, stand-alone packages is also possible, but it's a bit more involved:
+    https://docs.oracle.com/en/java/javase/21/docs/specs/man/jpackage.html)
+
+****************************************************************************************************
+
+To use this build file, you must have ANT installed on your system. (See the above link for
+instructions on how to install.) Once installed, you can run the build with the command (from
+the directory containing this file):
+
+    ant jar
+
+After the build is complete, you may run the program with the command:
+
+    java -jar Game.jar
+
+************************************************************************************************** -->
+
+
+<!-- ==================================== START PROJECT CONFIG ================================= -->
+
+<project default="compile">
+    <!-- Global properties for this build -->
+    <property name="main" value="objectAdventure.Main"/>
+    <property name="jarFile" location="Game.jar"/>
+    <property name="build" location="build"/>
+    <property name="src" location="src"/>
+    <property name="test.src" location="test"/>
+    <property name="test.build" location="build/testing"/>
+    <property name="lib" location="lib"/>
+    <property name="jdk" value="21"/>
+    <property name="stdin" value=""/>
+
+
+    <!-- Clean target: Deletes the build directory -->
+    <target name="clean">
+        <delete dir="${build}"/>
+    </target>
+
+
+    <!-- Clean-All target: Deletes the build directory and the JAR file -->
+    <target name="clean-all" depends="clean">
+        <delete file="${jarFile}"/>
+    </target>
+
+
+    <!-- Compile target: Compiles the Java source files -->
+    <target name="compile" depends="clean">
+        <echo>Start Compiling: ${basedir}</echo>
+
+        <!-- Create the build directory if it doesn't exist -->
+        <mkdir dir="${build}"/>
+
+        <!-- Compile the Java source files -->
+        <javac srcdir="${src}" destdir="${build}" release="${jdk}" encoding="UTF-8"
+               includeantruntime="false" fork="true"
+               debug="true" deprecation="true"
+               optimize="false" failonerror="true"
+               excludes="**/package-info.java">
+
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
+
+        <copy todir="${build}">
+            <fileset dir="${src}" excludes="**/*.java"/>
+        </copy>
+
+        <echo>End Compiling: ${basedir}</echo>
+    </target>
+
+
+    <!-- Jar target: Creates a JAR file from the compiled classes -->
+    <target name="jar" depends="compile">
+        <!-- Create the JAR file -->
+        <jar destfile="${jarFile}" basedir="${build}">
+            <!-- Copy all files from src folder to .jar -->
+            <!-- <fileset dir="${build}" /> -->
+
+            <!-- Copy all non-Java src files to .jar -->
+            <!-- <fileset dir="${src}" excludes="**/*.java" /> -->
+
+            <manifest>
+                <attribute name="Main-Class" value="${main}"/>
+            </manifest>
+        </jar>
+
+        <!-- Clean up the build directory after creating the JAR -->
+        <antcall target="clean"/>
+    </target>
+
+
+    <!-- Run target: Runs the program -->
+    <target name="run" depends="compile">
+        <java classpath="${build}" classname="${main}"/>
+        <antcall target="clean"/>
+    </target>
+
+
+    <!-- Check target: Compiles the source files and then cleans up -->
+    <target name="check">
+        <antcall target="compile"/>
+        <antcall target="clean"/>
+    </target>
+
+    <!-- ******************************* Testing Targets ******************************* -->
+
+    <!-- Define the JUnit 5 classpath -->
+    <path id="junit.classpath">
+        <fileset dir="${lib}">
+            <include name="junit-platform-console-standalone-1.10.0.jar"/>
+        </fileset>
+    </path>
+
+    <!-- Define the test classpath -->
+    <path id="test.classpath">
+        <path refid="junit.classpath"/>
+        <pathelement location="${build}"/>
+        <pathelement location="${test.build}"/>
+    </path>
+
+    <!-- Define conditions to check if stdin property is set and not empty -->
+    <condition property="stdin.empty">
+        <equals arg1="${stdin}" arg2=""/>
+    </condition>
+
+
+    <!-- Run with input target: Runs the program with input from a specified file file specified when launching ANT.
+         For example, ant test-input -Dstdin="input.txt" -->
+    <target name="test-input" depends="compile" if="stdin" unless="stdin.empty">
+        <echo message="Running with input from ${stdin}"/>
+        <java classpath="${build}" classname="${main}" input="${stdin}"/>
+        <antcall target="clean"/>
+    </target>
+
+
+    <!-- Setup libraries macro: Downloads JUnit 5 libraries if not already present -->
+    <macrodef name="download-test-libs">
+        <sequential>
+            <mkdir dir="${lib}"/>
+            <get src="https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.0/junit-platform-console-standalone-1.10.0.jar"
+                 dest="${lib}/junit-platform-console-standalone-1.10.0.jar" skipexisting="true"/>
+        </sequential>
+    </macrodef>
+
+    <!-- Compile test target: Compiles the test source files -->
+    <target name="compile-tests" depends="compile">
+        <echo>Start Compiling Tests: ${basedir}</echo>
+
+        <!-- Download JUnit libraries if needed -->
+        <download-test-libs/>
+
+        <!-- Create the test build directory if it doesn't exist -->
+        <mkdir dir="${test.build}"/>
+
+        <!-- Compile the test source files -->
+        <javac srcdir="${test.src}" destdir="${test.build}" release="${jdk}" encoding="UTF-8"
+               includeantruntime="false" fork="true"
+               debug="true" deprecation="true"
+               optimize="false" failonerror="true"
+               excludes="**/package-info.java">
+
+            <classpath refid="test.classpath"/>
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
+
+        <echo>End Compiling Tests: ${basedir}</echo>
+    </target>
+
+
+    <!-- Run JUnit tests macrodef -->
+    <macrodef name="run-tests">
+        <sequential>
+            <echo>Running JUnit 5 Tests</echo>
+            <mkdir dir="${build}/test-reports"/>
+            <java classname="org.junit.platform.console.ConsoleLauncher" fork="true" failonerror="true">
+                <classpath refid="test.classpath"/>
+                <arg value="execute"/>
+                <arg value="--scan-class-path"/>
+                <arg value="--reports-dir=${build}/test-reports"/>
+            </java>
+            <echo>JUnit 5 Tests Complete</echo>
+        </sequential>
+    </macrodef>
+
+
+    <!-- All tests target: Compiles and runs all tests -->
+    <target name="test-all" depends="compile-tests">
+        <run-tests/>
+        <echo>All tests completed successfully</echo>
+    </target>
+
+</project>

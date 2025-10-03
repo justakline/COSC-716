@@ -1,0 +1,60 @@
+package objectAdventure.world.aconover;
+
+import objectAdventure.common.Utils;
+import objectAdventure.core.item.Item;
+import objectAdventure.core.room.Room;
+
+/**
+ * The StartRoom is the first room the player will see when they start the game.
+ *
+ * @author Adam J. Conover, COSC436/COSC716
+ */
+public class StartRoom extends Room {
+    /**
+     * Constructor for the room.
+     * <p>
+     * This is private because we are using a simple static initializer to create the new room.
+     *
+     * @param roomId The ID of the room.
+     */
+    public StartRoom(final int roomId, final String roomName) {
+        super(roomId, roomName);
+
+        // This should be set to your name.
+        setRoomAuthor("Adam J. Conover");
+
+        initRoomItems();
+        initRoomDescription();
+    }
+
+    /**
+     * Initializes the room items.
+     */
+    private void initRoomItems() {
+        Item demoItem = new DemoItem();
+        this.addItem(demoItem);
+    }
+
+    /**
+     * Sets up the room description.
+     */
+    private void initRoomDescription() {
+        // NOTE: This text should be replaced with your own!!!
+        String description = """
+                This is not a very interesting room, but this description
+                is here mainly to illustrate how to use multi-line strings
+                in Java in an easily readable manner. (If you are seeing this
+                text "in game", then look over the source code for this room.)
+                
+                You can type "help" (or "?") to see a list of commands that
+                you can use in the game or "quit" (or "Q") to quit.""";
+
+        // Construct the room display header.
+        String roomNameAndAuthor = "%s\n%s".formatted(getRoomName(), getRoomAuthor());
+        final String roomDisplayHeader = Utils.boxifyText(roomNameAndAuthor);
+
+        // Set the Room description.
+        setRoomDescription(roomDisplayHeader + '\n' + description);
+    }
+
+}

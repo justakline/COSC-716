@@ -1,0 +1,14 @@
+# This file lists all implementations of the RoomProvider interface. It is an example of the Service Provider
+# Interface (SPI) pattern in Java.  Service providers are loaded at runtime using the ServiceLoader class instead
+# of being referenced directly in code. This allows for a modular architecture where new room providers can
+# be added without modifying existing code.
+
+# src\META-INF\services\objectAdventure.core.room.RoomProvider
+
+###################################################################################################################
+
+# Aconover
+objectAdventure.world.aconover.StartRoomProvider
+
+# Student Rooms ...
+objectAdventure.world.jkline11.FireRoomProvider
